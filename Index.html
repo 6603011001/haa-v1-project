@@ -1,0 +1,21 @@
+HAA-v1 | Human AI Assistant body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; text-align: center; padding: 60px; } h1 { font-size: 32px; } input { padding: 12px; width: 320px; border-radius: 12px; border: none; margin-top: 20px; } button { padding: 12px 20px; margin-left: 10px; border-radius: 12px; border: none; background: #22c55e; color: white; cursor: pointer; font-weight: bold; } button:hover { background: #16a34a; } .box { margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 16px; display: inline-block; min-width: 300px; } 🔥 Human AI Assistant v1 (HAA-v1) 
+
+AI วิเคราะห์อารมณ์ + ปัญหาธุรกิจ
+
+วิเคราะห์ 
+
+ผลลัพธ์จะแสดงตรงนี้...
+
+function analyze() { let t = document.getElementById("text").value; let emotion = "😐 ปกติ"; if (t.includes("ไม่พอใจ")) emotion = "😟 ลูกค้าไม่พอใจ"; if (t.includes("เครียด")) emotion = "😣 ความเครียด"; if (t.includes("ยอดขายตก")) emotion = "📉 ยอดขายลดลง"; let topic = "📊 ธุรกิจทั่วไป"; if (t.includes("ลูกค้า")) topic = "👥 การบริการลูกค้า"; if (t.includes("ยอดขาย")) topic = "💰 การขาย"; let strategy = "💡 วิเคราะห์เพิ่มเติม"; if (t.includes("ยอดขายตก")) strategy = "🔥 ทำโปรโมชั่น / ยิงแอด"; if (t.includes("ลูกค้าไม่พอใจ")) strategy = "📞 ปรับปรุงบริการ / รับฟัง Feedback"; document.getElementById("output").innerHTML = "📊 ผลวิเคราะห์" + "
+
+Emotion: " + emotion + "
+
+" + "
+
+Topic: " + topic + "
+
+" + "
+
+Strategy: " + strategy + "
+
+"; } 
