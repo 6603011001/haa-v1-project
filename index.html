@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>HAA-v1</title>
+</head>
+
+<body style="background:#0f172a;color:white;text-align:center;padding:50px;font-family:sans-serif;">
+
+<h1>🔥 HAA-v1</h1>
+<p>AI วิเคราะห์ปัญหาธุรกิจ</p>
+
+<input id="t" placeholder="พิมพ์ เช่น ยอดขายตก" style="padding:10px;border-radius:10px;">
+<button onclick="run()" style="padding:10px;">วิเคราะห์</button>
+
+<div id="out" style="margin-top:20px;"></div>
+
+<script>
+function run(){
+ let x=document.getElementById("t").value;
+
+ let e="😐 ปกติ";
+ if(x.includes("ยอดขายตก")) e="📉 ยอดขายตก";
+
+ let s="💡 ปรับปรุง";
+ if(x.includes("ยอดขายตก")) s="🔥 ทำโปรโมชั่น";
+
+ document.getElementById("out").innerHTML=
+ "Emotion: "+e+"<br>Strategy: "+s;
+}
+</script>
+
+</body>
+</html>
