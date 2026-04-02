@@ -5,14 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-    margin:0;
-    font-family:sans-serif;
-}
+body { margin:0; font-family:sans-serif; }
 
-/* แชทเต็มจอ */
 #chatApp {
-    width:100%;
     height:100vh;
     display:flex;
     flex-direction:column;
@@ -20,14 +15,11 @@ body {
     color:white;
 }
 
-/* Header */
 #header {
     padding:15px;
     background:#020617;
-    font-size:18px;
 }
 
-/* ข้อความ */
 #messages {
     flex:1;
     overflow-y:auto;
@@ -41,22 +33,9 @@ body {
     max-width:70%;
 }
 
-.user {
-    background:#38bdf8;
-    margin-left:auto;
-}
+.user { background:#38bdf8; margin-left:auto; }
+.ai { background:#334155; }
 
-.ai {
-    background:#334155;
-}
-
-/* typing */
-.typing {
-    font-size:12px;
-    opacity:0.7;
-}
-
-/* input */
 #inputArea {
     display:flex;
     padding:10px;
@@ -68,16 +47,14 @@ body {
     padding:10px;
     border:none;
     border-radius:10px;
-    outline:none;
 }
 
 button {
-    margin-left:10px;
+    margin-left:5px;
     padding:10px;
     border:none;
     border-radius:10px;
     background:#38bdf8;
-    cursor:pointer;
 }
 </style>
 </head>
@@ -85,94 +62,82 @@ button {
 <body>
 
 <div id="chatApp">
-
     <div id="header">❤️ AI ที่เข้าใจหัวใจคุณ</div>
-
     <div id="messages"></div>
 
-    <div id="typing" class="typing"></div>
-
     <div id="inputArea">
-        <input id="input" placeholder="พิมพ์ความรู้สึกของคุณ..." />
+        <input id="input" placeholder="พิมพ์หรือพูด..." />
         <button onclick="sendMessage()">ส่ง</button>
+        <button onclick="startListening()">🎤</button>
     </div>
-
 </div>
 
 <script>
-let memory = [];
+const API_URL = "https://YOUR-RENDER-URL"; // 🔥 เปลี่ยนตรงนี้
 
-document.getElementById("input").addEventListener("keypress", function(e){
-    if(e.key === "Enter"){
-        sendMessage();
-    }
+document.getElementById("input").addEventListener("keypress", e=>{
+    if(e.key==="Enter") sendMessage();
 });
 
-function sendMessage(){
-    let input = document.getElementById("input");
-    let msg = input.value.trim();
-    if(msg === "") return;
+function addMessage(text,type){
+    let div=document.createElement("div");
+    div.className="msg "+type;
+    div.innerText=text;
+    messages.appendChild(div);
+    messages.scrollTop=messages.scrollHeight;
+
+    if(type==="ai") speak(text);
+}
+
+async function sendMessage(){
+    let input=document.getElementById("input");
+    let msg=input.value.trim();
+    if(!msg) return;
 
     addMessage(msg,"user");
-    memory.push(msg);
     input.value="";
 
-    showTyping(true);
+    let res=await fetch(API_URL+"/chat",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({message:msg})
+    });
 
-    setTimeout(()=>{
-        let reply = smartAI(msg);
-        showTyping(false);
-        addMessage(reply,"ai");
-        memory.push(reply);
-    },1000);
+    let data=await res.json();
+    addMessage(data.content,"ai");
 }
 
-function addMessage(text,type){
-    let div = document.createElement("div");
-    div.className = "msg " + type;
-    div.innerText = text;
+// 🎤 Speech to Text
+function startListening(){
+    const rec=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+    rec.lang="th-TH";
+    rec.start();
 
-    let messages = document.getElementById("messages");
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+    rec.onresult=e=>{
+        let text=e.results[0][0].transcript;
+        document.getElementById("input").value=text;
+        sendMessage();
+    };
 }
 
-// typing effect
-function showTyping(show){
-    let t = document.getElementById("typing");
-    t.innerText = show ? "AI กำลังพิมพ์..." : "";
+// 🔊 Text to Speech
+function speak(text){
+    let speech=new SpeechSynthesisUtterance(text);
+    speech.lang="th-TH";
+    window.speechSynthesis.speak(speech);
 }
 
-// วิเคราะห์อารมณ์
-function analyze(msg){
-    msg = msg.toLowerCase();
-    if(msg.includes("อกหัก")||msg.includes("เสียใจ")) return "sad";
-    if(msg.includes("เหงา")) return "lonely";
-    if(msg.includes("รัก")) return "love";
-    return "normal";
+// โหลด history
+async function loadHistory(){
+    let res=await fetch(API_URL+"/history");
+    let data=await res.json();
+
+    data.forEach(chat=>{
+        addMessage(chat.user,"user");
+        addMessage(chat.ai,"ai");
+    });
 }
-
-// AI ตอบ
-function smartAI(msg){
-    let emo = analyze(msg);
-    let last = memory[memory.length-2]||"";
-
-    if(emo==="sad"){
-        return "เรารู้ว่ามันเจ็บนะ... แต่คุณไม่ได้อยู่คนเดียว ❤️";
-    }
-    if(emo==="lonely"){
-        return "ถ้าคุณเหงา เราอยู่ตรงนี้นะ 🫂";
-    }
-    if(emo==="love"){
-        return "ความรักมันสวยงามนะ แล้วเขาทำให้คุณรู้สึกยังไงบ้าง 😊";
-    }
-
-    if(last.includes("อกหัก")){
-        return "ยังคิดถึงเขาอยู่ใช่ไหม... มันปกตินะ 💔";
-    }
-
-    return "เล่าให้เราฟังเพิ่มได้ไหม เราอยากเข้าใจคุณ ❤️";
-}
+loadHistory();
 </script>
 
 </body>
