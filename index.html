@@ -1,8 +1,6 @@
-<!-- ❤️ AI Chat -->
 <div id="chatBox">
     <div id="messages"></div>
-    <input type="text" id="input" placeholder="พิมพ์เรื่องหัวใจของคุณ..." />
-    <button onclick="sendMessage()">ส่ง</button>
+    <input type="text" id="input" placeholder="เล่าเรื่องหัวใจของคุณ..." />
 </div>
 
 <style>
@@ -10,27 +8,27 @@
     position:fixed;
     bottom:20px;
     right:20px;
-    width:300px;
+    width:320px;
     background:#1e293b;
     padding:10px;
     border-radius:15px;
 }
 
 #messages {
-    height:200px;
+    height:250px;
     overflow-y:auto;
-    margin-bottom:10px;
 }
 
 .msg {
     padding:8px;
     margin:5px;
     border-radius:10px;
+    max-width:80%;
 }
 
 .user {
     background:#38bdf8;
-    text-align:right;
+    margin-left:auto;
 }
 
 .ai {
@@ -39,46 +37,79 @@
 </style>
 
 <script>
+let memory = []; // 🧠 จำบทสนทนา
+
+document.getElementById("input").addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        sendMessage();
+    }
+});
+
 function sendMessage(){
     let input = document.getElementById("input");
-    let msg = input.value;
+    let msg = input.value.trim();
     if(msg === "") return;
 
     addMessage(msg, "user");
+    memory.push(msg);
+
     input.value = "";
 
     setTimeout(()=>{
-        let reply = getAIResponse(msg);
+        let reply = smartAI(msg);
         addMessage(reply, "ai");
-    },500);
+        memory.push(reply);
+    },600);
 }
 
 function addMessage(text, type){
-    let messages = document.getElementById("messages");
     let div = document.createElement("div");
     div.className = "msg " + type;
     div.innerText = text;
+
+    let messages = document.getElementById("messages");
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
 }
 
-// ❤️ AI logic (เรื่องหัวใจ)
-function getAIResponse(msg){
+// 🧠 AI วิเคราะห์ความรู้สึก
+function analyzeEmotion(msg){
     msg = msg.toLowerCase();
 
-    if(msg.includes("รัก")){
-        return "ความรักมันสวยงามนะ แต่ก็ต้องดูแลหัวใจตัวเองด้วย ❤️";
-    }
-    if(msg.includes("อกหัก")){
-        return "การอกหักมันเจ็บ แต่ก็เป็นส่วนหนึ่งของการเติบโตนะ 💔";
-    }
-    if(msg.includes("คิดถึง")){
-        return "บางครั้งการคิดถึงใครสักคน แปลว่าเขาสำคัญมากจริง ๆ 🥺";
-    }
-    if(msg.includes("เหงา")){
-        return "คุณไม่ได้อยู่คนเดียวเสมอไปนะ ยังมีเราอยู่ตรงนี้ ❤️";
+    if(msg.includes("อกหัก") || msg.includes("เสียใจ")) return "sad";
+    if(msg.includes("เหงา") || msg.includes("คนเดียว")) return "lonely";
+    if(msg.includes("รัก") || msg.includes("ชอบ")) return "love";
+    if(msg.includes("มีความสุข") || msg.includes("ดีใจ")) return "happy";
+
+    return "neutral";
+}
+
+// ❤️ AI ตอบแบบมี context
+function smartAI(msg){
+    let emotion = analyzeEmotion(msg);
+    let last = memory[memory.length - 2] || "";
+
+    if(emotion === "sad"){
+        return "เรารู้ว่ามันเจ็บนะ... แต่คุณไม่ได้ต้องผ่านมันคนเดียว ❤️";
     }
 
-    return "เล่าให้ฟังเพิ่มได้ไหม เราอยากเข้าใจหัวใจของคุณมากขึ้น ❤️";
+    if(emotion === "lonely"){
+        return "ถ้าคุณเหงา ลองเล่าให้เราฟังได้นะ เราอยู่ตรงนี้ 🫂";
+    }
+
+    if(emotion === "love"){
+        return "ความรักมันทำให้โลกสดใสขึ้นจริง ๆ นะ 😊 แล้วเขาทำให้คุณรู้สึกยังไงบ้าง?";
+    }
+
+    if(emotion === "happy"){
+        return "ดีใจไปกับคุณด้วยนะ 😊 เล่าเพิ่มอีกได้ไหม!";
+    }
+
+    // ใช้ context
+    if(last.includes("อกหัก")){
+        return "ยังคิดถึงเขาอยู่ใช่ไหม... มันเป็นเรื่องปกตินะ 💔";
+    }
+
+    return "เราอยากเข้าใจคุณมากขึ้น เล่าเพิ่มได้ไหม ❤️";
 }
 </script>
