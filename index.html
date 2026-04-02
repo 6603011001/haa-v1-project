@@ -1,29 +1,44 @@
-<div id="chatBox">
-    <div id="messages"></div>
-    <input type="text" id="input" placeholder="เล่าเรื่องหัวใจของคุณ..." />
-</div>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-#chatBox {
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    width:320px;
-    background:#1e293b;
-    padding:10px;
-    border-radius:15px;
+body {
+    margin:0;
+    font-family:sans-serif;
 }
 
+/* แชทเต็มจอ */
+#chatApp {
+    width:100%;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:#0f172a;
+    color:white;
+}
+
+/* Header */
+#header {
+    padding:15px;
+    background:#020617;
+    font-size:18px;
+}
+
+/* ข้อความ */
 #messages {
-    height:250px;
+    flex:1;
     overflow-y:auto;
+    padding:10px;
 }
 
 .msg {
-    padding:8px;
+    padding:10px;
     margin:5px;
-    border-radius:10px;
-    max-width:80%;
+    border-radius:15px;
+    max-width:70%;
 }
 
 .user {
@@ -34,10 +49,58 @@
 .ai {
     background:#334155;
 }
+
+/* typing */
+.typing {
+    font-size:12px;
+    opacity:0.7;
+}
+
+/* input */
+#inputArea {
+    display:flex;
+    padding:10px;
+    background:#020617;
+}
+
+#input {
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+}
+
+button {
+    margin-left:10px;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#38bdf8;
+    cursor:pointer;
+}
 </style>
+</head>
+
+<body>
+
+<div id="chatApp">
+
+    <div id="header">❤️ AI ที่เข้าใจหัวใจคุณ</div>
+
+    <div id="messages"></div>
+
+    <div id="typing" class="typing"></div>
+
+    <div id="inputArea">
+        <input id="input" placeholder="พิมพ์ความรู้สึกของคุณ..." />
+        <button onclick="sendMessage()">ส่ง</button>
+    </div>
+
+</div>
 
 <script>
-let memory = []; // 🧠 จำบทสนทนา
+let memory = [];
 
 document.getElementById("input").addEventListener("keypress", function(e){
     if(e.key === "Enter"){
@@ -50,19 +113,21 @@ function sendMessage(){
     let msg = input.value.trim();
     if(msg === "") return;
 
-    addMessage(msg, "user");
+    addMessage(msg,"user");
     memory.push(msg);
+    input.value="";
 
-    input.value = "";
+    showTyping(true);
 
     setTimeout(()=>{
         let reply = smartAI(msg);
-        addMessage(reply, "ai");
+        showTyping(false);
+        addMessage(reply,"ai");
         memory.push(reply);
-    },600);
+    },1000);
 }
 
-function addMessage(text, type){
+function addMessage(text,type){
     let div = document.createElement("div");
     div.className = "msg " + type;
     div.innerText = text;
@@ -72,44 +137,43 @@ function addMessage(text, type){
     messages.scrollTop = messages.scrollHeight;
 }
 
-// 🧠 AI วิเคราะห์ความรู้สึก
-function analyzeEmotion(msg){
-    msg = msg.toLowerCase();
-
-    if(msg.includes("อกหัก") || msg.includes("เสียใจ")) return "sad";
-    if(msg.includes("เหงา") || msg.includes("คนเดียว")) return "lonely";
-    if(msg.includes("รัก") || msg.includes("ชอบ")) return "love";
-    if(msg.includes("มีความสุข") || msg.includes("ดีใจ")) return "happy";
-
-    return "neutral";
+// typing effect
+function showTyping(show){
+    let t = document.getElementById("typing");
+    t.innerText = show ? "AI กำลังพิมพ์..." : "";
 }
 
-// ❤️ AI ตอบแบบมี context
+// วิเคราะห์อารมณ์
+function analyze(msg){
+    msg = msg.toLowerCase();
+    if(msg.includes("อกหัก")||msg.includes("เสียใจ")) return "sad";
+    if(msg.includes("เหงา")) return "lonely";
+    if(msg.includes("รัก")) return "love";
+    return "normal";
+}
+
+// AI ตอบ
 function smartAI(msg){
-    let emotion = analyzeEmotion(msg);
-    let last = memory[memory.length - 2] || "";
+    let emo = analyze(msg);
+    let last = memory[memory.length-2]||"";
 
-    if(emotion === "sad"){
-        return "เรารู้ว่ามันเจ็บนะ... แต่คุณไม่ได้ต้องผ่านมันคนเดียว ❤️";
+    if(emo==="sad"){
+        return "เรารู้ว่ามันเจ็บนะ... แต่คุณไม่ได้อยู่คนเดียว ❤️";
+    }
+    if(emo==="lonely"){
+        return "ถ้าคุณเหงา เราอยู่ตรงนี้นะ 🫂";
+    }
+    if(emo==="love"){
+        return "ความรักมันสวยงามนะ แล้วเขาทำให้คุณรู้สึกยังไงบ้าง 😊";
     }
 
-    if(emotion === "lonely"){
-        return "ถ้าคุณเหงา ลองเล่าให้เราฟังได้นะ เราอยู่ตรงนี้ 🫂";
-    }
-
-    if(emotion === "love"){
-        return "ความรักมันทำให้โลกสดใสขึ้นจริง ๆ นะ 😊 แล้วเขาทำให้คุณรู้สึกยังไงบ้าง?";
-    }
-
-    if(emotion === "happy"){
-        return "ดีใจไปกับคุณด้วยนะ 😊 เล่าเพิ่มอีกได้ไหม!";
-    }
-
-    // ใช้ context
     if(last.includes("อกหัก")){
-        return "ยังคิดถึงเขาอยู่ใช่ไหม... มันเป็นเรื่องปกตินะ 💔";
+        return "ยังคิดถึงเขาอยู่ใช่ไหม... มันปกตินะ 💔";
     }
 
-    return "เราอยากเข้าใจคุณมากขึ้น เล่าเพิ่มได้ไหม ❤️";
+    return "เล่าให้เราฟังเพิ่มได้ไหม เราอยากเข้าใจคุณ ❤️";
 }
 </script>
+
+</body>
+</html>
