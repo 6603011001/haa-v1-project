@@ -1,179 +1,84 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nattapon Portfolio</title>
+<!-- ❤️ AI Chat -->
+<div id="chatBox">
+    <div id="messages"></div>
+    <input type="text" id="input" placeholder="พิมพ์เรื่องหัวใจของคุณ..." />
+    <button onclick="sendMessage()">ส่ง</button>
+</div>
 
 <style>
-body {
-    margin:0;
-    font-family: 'Segoe UI', sans-serif;
-    background:#0f172a;
-    color:white;
-    transition:0.3s;
-}
-
-.light-mode {
-    background:white;
-    color:black;
-}
-
-/* Navbar */
-nav {
-    display:flex;
-    justify-content:space-between;
-    padding:15px 40px;
-    background:#020617;
-    position:sticky;
-    top:0;
-}
-
-nav a {
-    color:white;
-    text-decoration:none;
-    margin-left:20px;
-    cursor:pointer;
-}
-
-/* Hero */
-.hero {
-    text-align:center;
-    padding:80px 20px;
-}
-
-.hero h1 span {
-    color:#38bdf8;
-}
-
-/* Section */
-.section {
-    padding:60px 20px;
-    text-align:center;
-    opacity:0;
-    transform:translateY(50px);
-    transition:0.6s;
-}
-
-.show {
-    opacity:1;
-    transform:translateY(0);
-}
-
-/* Card */
-.card {
+#chatBox {
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:300px;
     background:#1e293b;
-    padding:20px;
+    padding:10px;
     border-radius:15px;
-    margin:10px;
-    display:inline-block;
-    width:250px;
-    transition:0.3s;
 }
 
-.card:hover {
-    transform:translateY(-10px) scale(1.05);
+#messages {
+    height:200px;
+    overflow-y:auto;
+    margin-bottom:10px;
 }
 
-/* Button */
-.btn {
-    padding:10px 20px;
-    background:#38bdf8;
-    border:none;
+.msg {
+    padding:8px;
+    margin:5px;
     border-radius:10px;
-    cursor:pointer;
 }
 
-/* Footer */
-footer {
-    text-align:center;
-    padding:20px;
-    background:#020617;
+.user {
+    background:#38bdf8;
+    text-align:right;
+}
+
+.ai {
+    background:#334155;
 }
 </style>
 
-</head>
-
-<body>
-
-<!-- Navbar -->
-<nav>
-    <h2>Nattapon</h2>
-    <div>
-        <a onclick="scrollToSection('about')">About</a>
-        <a onclick="scrollToSection('skills')">Skills</a>
-        <a onclick="scrollToSection('projects')">Projects</a>
-        <a onclick="scrollToSection('contact')">Contact</a>
-        <button class="btn" onclick="toggleMode()">🌙</button>
-    </div>
-</nav>
-
-<!-- Hero -->
-<section class="hero">
-    <h1>Hi, I'm <span>Nattapon</span> 👋</h1>
-    <p>Web Developer | Student</p>
-</section>
-
-<!-- About -->
-<section id="about" class="section">
-    <h2>About Me</h2>
-    <p>ผมสนใจด้าน Web และ Data ชอบทำโปรเจกต์ใหม่ ๆ</p>
-</section>
-
-<!-- Skills -->
-<section id="skills" class="section">
-    <h2>Skills</h2>
-    <div class="card">HTML</div>
-    <div class="card">CSS</div>
-    <div class="card">JavaScript</div>
-</section>
-
-<!-- Projects -->
-<section id="projects" class="section">
-    <h2>Projects</h2>
-    <div class="card">
-        <h3>HAA V1</h3>
-        <p>โปรเจกต์เว็บไซต์</p>
-    </div>
-</section>
-
-<!-- Contact -->
-<section id="contact" class="section">
-    <h2>Contact</h2>
-    <p>Email: your@email.com</p>
-</section>
-
-<footer>
-    <p>© 2026 Nattapon</p>
-</footer>
-
 <script>
-// 🌙 Dark / Light Mode
-function toggleMode() {
-    document.body.classList.toggle("light-mode");
+function sendMessage(){
+    let input = document.getElementById("input");
+    let msg = input.value;
+    if(msg === "") return;
+
+    addMessage(msg, "user");
+    input.value = "";
+
+    setTimeout(()=>{
+        let reply = getAIResponse(msg);
+        addMessage(reply, "ai");
+    },500);
 }
 
-// 🎯 Smooth Scroll
-function scrollToSection(id) {
-    document.getElementById(id).scrollIntoView({
-        behavior: "smooth"
-    });
+function addMessage(text, type){
+    let messages = document.getElementById("messages");
+    let div = document.createElement("div");
+    div.className = "msg " + type;
+    div.innerText = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
 }
 
-// ✨ Scroll Animation
-const sections = document.querySelectorAll('.section');
+// ❤️ AI logic (เรื่องหัวใจ)
+function getAIResponse(msg){
+    msg = msg.toLowerCase();
 
-window.addEventListener('scroll', () => {
-    sections.forEach(sec => {
-        const top = window.scrollY;
-        const offset = sec.offsetTop - 400;
+    if(msg.includes("รัก")){
+        return "ความรักมันสวยงามนะ แต่ก็ต้องดูแลหัวใจตัวเองด้วย ❤️";
+    }
+    if(msg.includes("อกหัก")){
+        return "การอกหักมันเจ็บ แต่ก็เป็นส่วนหนึ่งของการเติบโตนะ 💔";
+    }
+    if(msg.includes("คิดถึง")){
+        return "บางครั้งการคิดถึงใครสักคน แปลว่าเขาสำคัญมากจริง ๆ 🥺";
+    }
+    if(msg.includes("เหงา")){
+        return "คุณไม่ได้อยู่คนเดียวเสมอไปนะ ยังมีเราอยู่ตรงนี้ ❤️";
+    }
 
-        if(top > offset){
-            sec.classList.add('show');
-        }
-    });
-});
+    return "เล่าให้ฟังเพิ่มได้ไหม เราอยากเข้าใจหัวใจของคุณมากขึ้น ❤️";
+}
 </script>
-
-</body>
-</html>
