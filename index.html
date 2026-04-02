@@ -11,6 +11,12 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background:#0f172a;
     color:white;
+    transition:0.3s;
+}
+
+.light-mode {
+    background:white;
+    color:black;
 }
 
 /* Navbar */
@@ -19,12 +25,15 @@ nav {
     justify-content:space-between;
     padding:15px 40px;
     background:#020617;
+    position:sticky;
+    top:0;
 }
 
 nav a {
     color:white;
     text-decoration:none;
     margin-left:20px;
+    cursor:pointer;
 }
 
 /* Hero */
@@ -33,11 +42,7 @@ nav a {
     padding:80px 20px;
 }
 
-.hero h1 {
-    font-size:48px;
-}
-
-.hero span {
+.hero h1 span {
     color:#38bdf8;
 }
 
@@ -45,6 +50,14 @@ nav a {
 .section {
     padding:60px 20px;
     text-align:center;
+    opacity:0;
+    transform:translateY(50px);
+    transition:0.6s;
+}
+
+.show {
+    opacity:1;
+    transform:translateY(0);
 }
 
 /* Card */
@@ -59,7 +72,16 @@ nav a {
 }
 
 .card:hover {
-    transform:scale(1.05);
+    transform:translateY(-10px) scale(1.05);
+}
+
+/* Button */
+.btn {
+    padding:10px 20px;
+    background:#38bdf8;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
 }
 
 /* Footer */
@@ -78,23 +100,24 @@ footer {
 <nav>
     <h2>Nattapon</h2>
     <div>
-        <a href="#about">About</a>
-        <a href="#skills">Skills</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
+        <a onclick="scrollToSection('about')">About</a>
+        <a onclick="scrollToSection('skills')">Skills</a>
+        <a onclick="scrollToSection('projects')">Projects</a>
+        <a onclick="scrollToSection('contact')">Contact</a>
+        <button class="btn" onclick="toggleMode()">🌙</button>
     </div>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
     <h1>Hi, I'm <span>Nattapon</span> 👋</h1>
-    <p>Web Developer | Student | Tech Lover</p>
+    <p>Web Developer | Student</p>
 </section>
 
 <!-- About -->
 <section id="about" class="section">
     <h2>About Me</h2>
-    <p>ผมเป็นนักศึกษาที่สนใจด้าน Web Development และ Data Technology ชอบสร้างโปรเจกต์ใหม่ ๆ</p>
+    <p>ผมสนใจด้าน Web และ Data ชอบทำโปรเจกต์ใหม่ ๆ</p>
 </section>
 
 <!-- Skills -->
@@ -103,15 +126,14 @@ footer {
     <div class="card">HTML</div>
     <div class="card">CSS</div>
     <div class="card">JavaScript</div>
-    <div class="card">Python</div>
 </section>
 
 <!-- Projects -->
 <section id="projects" class="section">
     <h2>Projects</h2>
     <div class="card">
-        <h3>HAA V1 Project</h3>
-        <p>โปรเจกต์เกี่ยวกับการวิเคราะห์และพัฒนาเว็บ</p>
+        <h3>HAA V1</h3>
+        <p>โปรเจกต์เว็บไซต์</p>
     </div>
 </section>
 
@@ -121,10 +143,37 @@ footer {
     <p>Email: your@email.com</p>
 </section>
 
-<!-- Footer -->
 <footer>
     <p>© 2026 Nattapon</p>
 </footer>
+
+<script>
+// 🌙 Dark / Light Mode
+function toggleMode() {
+    document.body.classList.toggle("light-mode");
+}
+
+// 🎯 Smooth Scroll
+function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+// ✨ Scroll Animation
+const sections = document.querySelectorAll('.section');
+
+window.addEventListener('scroll', () => {
+    sections.forEach(sec => {
+        const top = window.scrollY;
+        const offset = sec.offsetTop - 400;
+
+        if(top > offset){
+            sec.classList.add('show');
+        }
+    });
+});
+</script>
 
 </body>
 </html>
