@@ -75,6 +75,8 @@ button {
 <script>
 const API_URL = "https://ai-love-backend.onrender.com";
     
+const messages = document.getElementById("messages");   
+    
 document.getElementById("input").addEventListener("keypress", e=>{
     if(e.key==="Enter") sendMessage();
 });
